@@ -1,0 +1,18 @@
+<!doctype html>
+	<title>Files</title>
+	<style type="text/css">
+		ul {list-style-type: none;}
+		td {width: 50px;}
+	</style>
+	<table>
+		<tr>
+			<td><a href="/logout">logout</a></td>
+			<td></td>
+			<td><a href="/upload">upload</a></td>
+		</tr>	
+	</table>
+	<ul>
+		{% for filename in files %}
+			<li><a href=/upload/{{ filename }}>{{ filename }}</a>
+		{% endfor %}
+	</ul>

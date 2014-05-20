@@ -1,0 +1,15 @@
+<!doctype html>
+	<title>Uploaded</title>
+	<style type="text/css">
+		ul {list-style-type: none;}
+		td {width: 50px;}
+	</style>
+	<p>{{ filename }} has been uploaded</p>
+	{% if public %}
+		<p>The link to your file is '/public/{{ name }}'</p>
+		<p>Your file can also be found in your file list</p>
+	{% else %}
+		<p>The link to your file is '/uploads/{{ name }}'</p>
+	{% endif %}
+		<a href="/">back to file view</a>
+	
