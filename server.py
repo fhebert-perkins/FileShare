@@ -82,27 +82,5 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for('login'))
 
-"""
-API
-"""
-
-@app.route('/api/list')
-@requires_auth
-def auth_index():
-    files = os.listdir(app.config['UPLOAD_FOLDER'])
-    return files
-
-@app.route('/api/upload', methods='POST')
-@requires_auth
-def auth_upload():
-    file = request.files['file']
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-@app.route('/api/public/list')
-def public_list():
-    files = os.listdir(app.config['PUBLIC_FOLDER'])
-    response = jsonify(files=files)
-    return response
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
