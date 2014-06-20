@@ -1,0 +1,2 @@
+mkdir public
+mkdir private
