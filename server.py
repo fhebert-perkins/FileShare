@@ -2,12 +2,13 @@ import os
 import random
 from flask import Flask, request, redirect, url_for, send_from_directory, session, render_template, Response, jsonify
 from werkzeug.utils import secure_filename
+import json
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 
 app.config.update(dict(
-	SERVICE_URL='localhost:5000',
+	SERVICE_URL='localhost:8080',
 	UPLOAD_FOLDER='private',
 	PUBLIC_FOLDER='public',
 	DEBUG=True,
@@ -15,10 +16,11 @@ app.config.update(dict(
 	USER_FILE='users.cfg',
 	FILE_CONF='allowed_files.cfg'
 ))
-USERS = {}
-for line in open(app.config['USER_FILE'], 'r'):
-	if len(line.split(":")) == 2:
-		users[line.split(":")[0]] = line.split(":")[1].strip()
+
+file_text = open("users.json", "r")
+USERS = json.loads(file_text.read())
+file_text.close() # JSON (JavaScript Object Notation) is more efficient and flexible
+
 ALLOWED_EXTENSIONS = []
 for line in open(app.config['FILE_CONF'], 'r'):
 	if len(line.strip()) < 0:
@@ -31,7 +33,7 @@ def upload_file():
 	if session['logged_in']:
 		if request.method == 'POST':
 			public = False
-			if request.form['public'] == "True":
+			if "True" in request.form.keys(): # If the checkbox is not checked the nothing would be returned so by using in you can account for this error
 				public = True
 			file = request.files['file']
 			if file and allowed_file(file.filename):
@@ -48,9 +50,10 @@ def upload_file():
 		return '''
 		<!doctype html>
 		<h1>Upload new File</h1>
-		<form action="" method=post enctype=multipart/form-data>
-		  <p><input type=file name=file>
-			 <input type=submit value=Upload><input type="checkbox" name="public" value="True">public
+		<form action="/upload" method="post" enctype="multipart/form-data">
+		  	<input type=file name=file>
+			<input type=submit value=Upload>
+			<input type="checkbox" name="public" value="True"><label>public</label>
 		</form>
 		'''
 	return redirect(url_for('login'))
@@ -81,9 +84,9 @@ def login():
 				session['logged_in'] = True
 				return redirect(url_for('serve_index'))
 			else:
-				error = 'Invalid Password'
+				error = 'Invalid Password' # Change to "Invalid Credencial", its safer because it prevents user enumeration attacks
 		except:
-			error = 'Invalid Username'
+			error = 'Invalid Username' # Change to "Invalid Credencial", its safer because it prevents user enumeration attacks
 	return render_template('login.html', error=error)
 
 @app.route('/logout')
@@ -92,4 +95,4 @@ def logout():
 	return redirect(url_for('login'))
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0')
+	app.run(host='0.0.0.0', port=8080, debug=True)
